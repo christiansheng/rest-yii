@@ -29,12 +29,13 @@ class Book extends ActiveRecord implements Linkable
         return 'book';
     }
 
+
     public function rules()
     {
         return [
-            [['isbn', 'date'], 'required'],
+            [['isbn', 'publish_at'], 'required'],
             [['version'], 'integer'],
-            [['date'], 'safe'],
+            [['publish_at', 'create_at', 'update_at'], 'safe'],
             [['name', 'authors'], 'string', 'max' => 100],
             [['press'], 'string', 'max' => 50],
             [['isbn', 'language'], 'string', 'max' => 20]
@@ -51,8 +52,10 @@ class Book extends ActiveRecord implements Linkable
             'authors' => 'Authors',
             'isbn' => 'Isbn',
             'version' => 'Version',
-            'date' => 'Date',
-            'lanuage' => 'Lanuage',
+            'language' => 'Language',
+            'publish_at' => 'Publish At',
+            'create_at' => 'Create At',
+            'update_at' => 'Update At',
         ];
     }
 
@@ -66,5 +69,33 @@ class Book extends ActiveRecord implements Linkable
         $link = implode('/', $url_slice).'/'.$this->id;
 
         return [ Link::REL_SELF => $link ];
+    }
+
+    public function afterFind(){
+        // if request is PUT, do nothing
+        if (Yii::$app->request->getIsPut())
+            return;
+
+        // else return friendly format to frontend
+        $authors = explode(',', $this->authors);
+        $this->authors  = $authors;
+    }
+
+    public function load($data, $formName = null)
+    {
+        $data = $this->_beforeLoad($data);
+        parent::load($data, $formName);
+    }
+
+    private function _beforeLoad($data)
+    {
+        // this is where we transform the input data, to suit our data model
+        $data['update_at']= date('Y-m-d h:i:s',time());
+
+        if(isset($data['authors'])) {
+            $data['authors'] = implode(',', $data['authors']);
+        }
+
+        return $data;
     }
 }
