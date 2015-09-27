@@ -6,10 +6,22 @@ $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
+    'modules' => [
+        'v1' => [
+            'class' => 'app\api\v1\RestfulModule',
+        ],
+        'v2' => [
+            'class' => 'app\api\v2\RestfulModule',
+        ],
+    ],
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-            'cookieValidationKey' => '',
+            'cookieValidationKey' => 'change it if you use in production',
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+                'text/json' => 'yii\web\JsonParser',
+            ]
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -35,6 +47,21 @@ $config = [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
                 ],
+            ],
+        ],
+        'urlManager' => [
+            'class' => 'yii\web\UrlManager',
+            'enablePrettyUrl' => true,
+            'enableStrictParsing' => true,
+            'showScriptName' => false,
+
+            'rules' => [
+                // put restful rules at front
+                ['class' => 'yii\rest\UrlRule', 'controller' => ['v1/book'], ],
+                "<controller:\w+>/<action:\w+>/<id:\d+>"=>"<controller>/<action>",
+                "<controller:\w+>/<action:\w+>"=>"<controller>/<action>",
+
+
             ],
         ],
         'db' => require(__DIR__ . '/db.php'),

@@ -9,9 +9,9 @@ $sql = "use rest_yii;
           `isbn` varchar(20) NOT NULL,
           `version` int(11) NOT NULL DEFAULT '1',
           `date` datetime NOT NULL,
-          `lanuage` varchar(20) NOT NULL DEFAULT '中文',
+          `language` varchar(20) NOT NULL DEFAULT '中文',
           PRIMARY KEY (`id`),
           UNIQUE KEY `id_UNIQUE` (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=129 DEFAULT CHARSET=utf8;";
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
 
 return $sql;
